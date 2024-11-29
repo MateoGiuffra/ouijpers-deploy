@@ -11,7 +11,7 @@ public class AppConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // Permite solicitudes CORS para todos los endpoints
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173")  // Especifica tu frontend
+                .allowedOrigins("*")  // Especifica tu frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE")  // Métodos permitidos
                 .allowCredentials(true)  // Permitir credenciales (cookies, headers de autenticación)
                 .maxAge(3600);  // Configura el tiempo máximo de caché de la solicitud CORS

@@ -17,6 +17,9 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
+# Archivos sensibles
+src/main/resources/deploy-key.json
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

@@ -1,6 +1,9 @@
 # Etapa 1: Construcción de la aplicación
 FROM eclipse-temurin:17-jdk-alpine as build
 
+# Asegúrate de que gradlew sea ejecutable
+RUN chmod +x gradlew
+
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
@@ -11,8 +14,7 @@ COPY build.gradle .
 COPY settings.gradle .
 COPY src ./src
 
-# Asegúrate de que gradlew sea ejecutable
-RUN chmod +x gradlew
+
 
 # Construye la aplicación
 RUN ./gradlew bootJar --no-daemon

@@ -1,22 +1,33 @@
-# Etapa de construcción
-FROM ubuntu:latest AS build
-RUN apt-get update && apt-get install -y openjdk-11-jdk
+# Etapa 1: Construcción de la aplicación
+FROM eclipse-temurin:17-jdk-alpine as build
+
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
-COPY . .
 
-# Otorgar permisos de ejecución a gradlew
-RUN chmod +x ./gradlew
+# Copia los archivos necesarios para el build
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle .
+COPY settings.gradle .
+COPY src ./src
 
-# Compilar el proyecto
+# Asegúrate de que gradlew sea ejecutable
+RUN chmod +x gradlew
+
+# Construye la aplicación
 RUN ./gradlew bootJar --no-daemon
 
-# Etapa de ejecución
-FROM openjdk:11-jre-slim
-EXPOSE 8080
+# Etapa 2: Imagen de producción
+FROM eclipse-temurin:17-jre-alpine
+
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar el archivo generado desde la etapa de construcción
-COPY --from=build /app/build/libs/epersgeist-1.0-SNAPSHOT.jar app.jar
+# Copia el archivo JAR generado en la etapa de construcción
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Definir el punto de entrada
+# Expone el puerto en el que la aplicación escuchará
+EXPOSE 8080
+
+# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]

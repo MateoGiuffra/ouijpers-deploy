@@ -14,7 +14,7 @@ public class AppConfiguration implements WebMvcConfigurer {
                 .allowedOrigins("*")  // Especifica tu frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE")  // Métodos permitidos
                 .allowCredentials(true)  // Permitir credenciales (cookies, headers de autenticación)
-                .maxAge(3600);  // Configura el tiempo máximo de caché de la solicitud CORS
+                .maxAge(3600);  // Configura el tiempo máximasdasdo de caché de la solicitud CORS
     }
 }
 

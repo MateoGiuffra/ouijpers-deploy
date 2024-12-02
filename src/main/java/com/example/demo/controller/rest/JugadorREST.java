@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@CrossOrigin(origins = "*", methods = RequestMethod.POST )
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 @RequestMapping("/jugador")
 public class JugadorREST {
 
@@ -61,7 +61,13 @@ public class JugadorREST {
         return ResponseEntity.ok(jugadorService.buscarJugador(nombre).map(JugadorDTO::desdeModelo));
     }
 
-    //este tenemos que eliminar
+    @GetMapping("/{nombre}/puntaje")
+    public ResponseEntity<Mono<Integer>> obtenerPuntaje(@PathVariable String nombre) {
+        Mono<Integer> puntaje = jugadorService.obtenerPuntaje(nombre);
+        return ResponseEntity.ok(puntaje);
+    }
+
+    //estos tenemos que eliminar
     @PutMapping("/{nombre}/{puntaje}")
     public ResponseEntity<Mono<JugadorDTO>> actualizar(@PathVariable String nombre, @PathVariable int puntaje) {
         Mono<JugadorDTO> jugadorActualizado = jugadorService.buscarJugador(nombre)
@@ -74,10 +80,14 @@ public class JugadorREST {
         return ResponseEntity.ok(jugadorActualizado);
     }
 
-    @GetMapping("/{nombre}/puntaje")
-    public ResponseEntity<Mono<Integer>> obtenerPuntaje(@PathVariable String nombre) {
-        Mono<Integer> puntaje = jugadorService.obtenerPuntaje(nombre);
-        return ResponseEntity.ok(puntaje);
+    @DeleteMapping("/{nombre}")
+    public ResponseEntity<String> eliminarJugador(@PathVariable String nombre) {
+        try {
+            jugadorService.borrarJugador(nombre);
+            return ResponseEntity.ok("El jugador: " + nombre + " ha sido eliminado");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.demo.modelo.Jugador;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 @RequestMapping("/juego")
 public class JuegoREST {
 
@@ -45,8 +45,5 @@ public class JuegoREST {
     public ResponseEntity<String> rondaActual(@PathVariable Long id) {
         return ResponseEntity.ok(juegoService.rondaActual(id));
     }
-
-
-
 
 }

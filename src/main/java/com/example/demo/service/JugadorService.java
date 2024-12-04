@@ -14,4 +14,5 @@ public interface JugadorService {
     Flux<Jugador> obtenerRanking();
     Mono<Jugador> adivinarLetra(Jugador jugador, Character letra, Juego juego);
     Mono<Integer> obtenerPuntaje(String nombre);
+    void detenerRanking();
 }

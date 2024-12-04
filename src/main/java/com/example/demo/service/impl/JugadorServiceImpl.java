@@ -41,43 +41,20 @@ public class JugadorServiceImpl implements JugadorService {
         return jugadorDAO.recuperarJugador(nombre).switchIfEmpty(Mono.error(new JugadorNoEncontradoException(nombre)));
     }
 
-// nueva propuesta a tiempo real
     @Override
     public Flux<Jugador> obtenerRanking() {
-        return Flux.create(sink -> {
-            // Establecemos el listener para los cambios en la colección 'jugadores'
-            ListenerRegistration registration = db.collection("jugadores")
-                    .orderBy("puntuacion", Query.Direction.DESCENDING)
-                    .addSnapshotListener((querySnapshot, e) -> {
-                        if (e != null) {
-                            // Si ocurre un error, lo manejamos y emitimos el error en el flujo
-                            sink.error(e);
-                            return;
-                        }
-                        if (querySnapshot != null) {
-                            // Procesamos los documentos y emitimos cada jugador
-                            for (QueryDocumentSnapshot document : querySnapshot.getDocuments()) {
-                                Jugador jugador = document.toObject(Jugador.class);
-                                sink.next(jugador);
-                            }
-                        }
-                    });
-
-            // Limpiamos el listener cuando el flujo termine (cuando el cliente deje de escuchar)
-            sink.onCancel(registration::remove);
-        });
+        return jugadorDAO.obtenerRanking();
     }
 
     @Override
     public Mono<Jugador> adivinarLetra(Jugador jugador, Character letra, Juego juego) {
         jugador.adivinarLetra(letra, juego);
+        Jugador jugadorSiguiente = jugadorDAO.recuperarJugador(jugador.getJugadorSiguiente()).block();
+        juego.cambiarTurnoA(jugador, jugadorSiguiente);
+        // se actualiza el juego y el jugador
         juegoDAO.save(juego);
+        actualizar(jugadorSiguiente);
         return actualizar(jugador);
-    }
-
-    @Override
-    public Mono<Integer> obtenerPuntaje(String nombre) {
-        return jugadorDAO.obtenerPuntaje(nombre);
     }
 
     @Override
@@ -91,5 +68,18 @@ public class JugadorServiceImpl implements JugadorService {
                 .onErrorMap(InterruptedException.class, e -> new RuntimeException("Operación interrumpida", e))
                 .onErrorMap(ExecutionException.class, Throwable::getCause);
     }
+
+    @Override
+    public Mono<Integer> obtenerPuntaje(String nombre) {
+        return jugadorDAO.recuperarJugador(nombre)
+                .switchIfEmpty(Mono.error(new JugadorNoEncontradoException(nombre)))
+                .map(Jugador::getPuntuacion);
+    }
+
+    @Override
+    public void detenerRanking() {
+        jugadorDAO.detenerRanking();
+    }
+
 }
 

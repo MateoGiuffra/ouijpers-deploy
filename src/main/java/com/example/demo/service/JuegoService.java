@@ -12,6 +12,6 @@ public interface JuegoService {
     String palabraAdivinando(Long id);
     Jugador empezarJuego(String nombre);
     String letrasEquivocadas(Long id);
-
+    Juego empezarRondaUltimate(Jugador j1, Jugador j2, Jugador j3, Long idJuego);
     String rondaActual(Long id);
 }

@@ -5,21 +5,21 @@ import com.example.demo.exception.accionInvalida.JugadorDuplicadoException;
 import com.example.demo.exception.notFound.JugadorNoEncontradoException;
 import com.example.demo.modelo.Jugador;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.ExecutionException;
-
 @Repository
 public class JugadorDAOImpl implements JugadorDAO {
 
     private final Firestore baseDeDatos;
+    private ListenerRegistration registration;
 
     public JugadorDAOImpl(Firestore baseDeDatos) {
         this.baseDeDatos = baseDeDatos;
+        registration = null;
     }
 
     @Override
@@ -27,7 +27,6 @@ public class JugadorDAOImpl implements JugadorDAO {
         // Verifica si el jugador ya existe en la base de datos
         ApiFuture<DocumentSnapshot> future = baseDeDatos.collection("jugadores")
                 .document(jugador.getNombre()).get();
-
         return Mono.fromCallable(future::get)
                 .flatMap(document -> {
                     if (document.exists()) {
@@ -55,7 +54,6 @@ public class JugadorDAOImpl implements JugadorDAO {
     @Override
     public Mono<Jugador> actualizarJugador(Jugador jugador) {
         ApiFuture<WriteResult> future = baseDeDatos.collection("jugadores").document(jugador.getNombre()).set(jugador);
-
         return Mono.fromCallable(future::get) // Ejecutamos la llamada de forma bloqueante
                 .flatMap(writeResult -> {
                     // Si la operación se completó exitosamente, devolvemos el jugador actualizado
@@ -84,6 +82,39 @@ public class JugadorDAOImpl implements JugadorDAO {
                     Jugador jugador = document.toObject(Jugador.class);
                     return Mono.just(jugador.getPuntuacion());
                 });
+    }
+
+    @Override
+    public Flux<Jugador> obtenerRanking() {
+        return Flux.create(sink -> {
+            // Establecemos el listener para los cambios en la colección 'jugadores'
+            this.registration = baseDeDatos.collection("jugadores")
+                    .orderBy("puntuacion", Query.Direction.DESCENDING)
+                    .addSnapshotListener((querySnapshot, e) -> {
+                        if (e != null) {
+                            // Si ocurre un error, lo manejamos y emitimos el error en el flujo
+                            sink.error(e);
+                            return;
+                        }
+                        if (querySnapshot != null) {
+                            // Procesamos los documentos y emitimos cada jugador
+                            for (QueryDocumentSnapshot document : querySnapshot.getDocuments()) {
+                                Jugador jugador = document.toObject(Jugador.class);
+                                sink.next(jugador);
+                            }
+                        }
+                    });
+
+            // Limpiamos el listener cuando el flujo termine (cuando el cliente deje de escuchar)
+            sink.onCancel(() -> {if (registration != null) registration.remove();});
+        });
+    }
+
+    public void detenerRanking(){
+        if (registration != null) {
+            registration.remove();
+            registration = null; // Para evitar reutilización accidental
+        }
     }
 
 }

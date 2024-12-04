@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
+@CrossOrigin
 @RequestMapping("/jugador")
 public class JugadorREST {
 
@@ -46,9 +46,20 @@ public class JugadorREST {
         return ResponseEntity.ok(ranking);
     }
 
+    @PutMapping(value = "/ranking")
+    public ResponseEntity <String> detenerRanking() {
+        try{
+            jugadorService.detenerRanking();
+            return ResponseEntity.ok("Ranking detenido con exito");
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("No se pudo detener el ranking: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/{nombre}/adivinarLetra/{letra}")
     public ResponseEntity<Mono<JugadorDTO>> adivinarLetra(@PathVariable String nombre, @PathVariable Character letra) {
         Validator.getInstance().validarLetra(letra);
+        Validator.getInstance().validarJugador(nombre);
 
         Jugador jugador = jugadorService.buscarJugador(nombre).block();
         Long idJuego = jugador.getIdJuego();
@@ -56,18 +67,13 @@ public class JugadorREST {
         Validator.getInstance().validarIdDeJuego(idJuego);
 
         Juego juegoRecuperado = juegoService.recuperarJuego(idJuego);
+
         jugadorService.adivinarLetra(jugador, letra,juegoRecuperado).subscribe();
 
         return ResponseEntity.ok(jugadorService.buscarJugador(nombre).map(JugadorDTO::desdeModelo));
     }
 
-    @GetMapping("/{nombre}/puntaje")
-    public ResponseEntity<Mono<Integer>> obtenerPuntaje(@PathVariable String nombre) {
-        Mono<Integer> puntaje = jugadorService.obtenerPuntaje(nombre);
-        return ResponseEntity.ok(puntaje);
-    }
-
-    //estos tenemos que eliminar
+    //este tenemos que eliminar
     @PutMapping("/{nombre}/{puntaje}")
     public ResponseEntity<Mono<JugadorDTO>> actualizar(@PathVariable String nombre, @PathVariable int puntaje) {
         Mono<JugadorDTO> jugadorActualizado = jugadorService.buscarJugador(nombre)
@@ -80,14 +86,12 @@ public class JugadorREST {
         return ResponseEntity.ok(jugadorActualizado);
     }
 
-    @DeleteMapping("/{nombre}")
-    public ResponseEntity<String> eliminarJugador(@PathVariable String nombre) {
-        try {
-            jugadorService.borrarJugador(nombre);
-            return ResponseEntity.ok("El jugador: " + nombre + " ha sido eliminado");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/{nombre}/puntaje")
+    public ResponseEntity<Mono<Integer>> obtenerPuntaje(@PathVariable String nombre) {
+        Mono<Integer> puntaje = jugadorService.obtenerPuntaje(nombre);
+        return ResponseEntity.ok(puntaje);
     }
+
+
 
 }

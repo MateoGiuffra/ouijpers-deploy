@@ -2,20 +2,24 @@ package com.example.demo.controller.rest;
 
 import com.example.demo.controller.dto.*;
 import com.example.demo.controller.utils.Validator;
+import com.example.demo.modelo.Juego;
 import com.example.demo.service.JuegoService;
+import com.example.demo.service.impl.JugadorServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.modelo.Jugador;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
+@CrossOrigin
 @RequestMapping("/juego")
 public class JuegoREST {
 
     private final JuegoService juegoService;
+    private final JugadorServiceImpl jugadorServiceImpl;
 
-    public JuegoREST(JuegoService juegoService) {
+    public JuegoREST(JuegoService juegoService, JugadorServiceImpl jugadorServiceImpl) {
         this.juegoService = juegoService;
+        this.jugadorServiceImpl = jugadorServiceImpl;
     }
 
     @PostMapping()
@@ -45,5 +49,20 @@ public class JuegoREST {
     public ResponseEntity<String> rondaActual(@PathVariable Long id) {
         return ResponseEntity.ok(juegoService.rondaActual(id));
     }
+
+    @PutMapping("/{id}/empezarRondaUltimate")
+    public ResponseEntity<JuegoDTO> empezarRondaUltimate(@RequestBody NombresDTO nombres, @PathVariable Long id) {
+        Validator.getInstance().validarNombres(nombres);
+        Validator.getInstance().validarIdDeJuego(id);
+
+        Jugador j1 = jugadorServiceImpl.buscarJugador(nombres.nombreJ1()).block();
+        Jugador j2 = jugadorServiceImpl.buscarJugador(nombres.nombreJ2()).block();
+        Jugador j3 = jugadorServiceImpl.buscarJugador(nombres.nombreJ3()).block();
+
+        Juego juego = juegoService.empezarRondaUltimate(j1,j2,j3,id);
+        return ResponseEntity.ok(JuegoDTO.desdeModelo(juego));
+    }
+
+
 
 }

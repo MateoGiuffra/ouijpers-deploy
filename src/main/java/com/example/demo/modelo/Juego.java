@@ -1,4 +1,5 @@
 package com.example.demo.modelo;
+
 import com.example.demo.modelo.ronda.Ronda;
 import com.example.demo.modelo.ronda.RondaUno;
 import jakarta.persistence.*;
@@ -23,8 +24,8 @@ public class Juego {
         this.rondaActual = ronda;
     }
 
-    public int evaluarLetra(Character letra){
-        int puntaje = rondaActual.evaluarLetra(letra);
+    public int evaluarLetra(Character letra, Jugador jugador){
+        int puntaje = rondaActual.evaluarLetra(letra, jugador);
         if (rondaActual.getIntentos() == 0 || rondaActual.esPalabraAcertada()){
           this.cambiarProximaRonda();
         }
@@ -33,6 +34,10 @@ public class Juego {
 
     public void cambiarProximaRonda() {
         rondaActual = rondaActual.proximaRonda();
+    }
+
+    public void cambiarTurnoA(Jugador jugador, Jugador jugadorSiguiente) {
+        this.rondaActual.cambiarTurnoA(jugador, jugadorSiguiente);
     }
 
     public String getLetrasEquivocadas(){
@@ -50,4 +55,6 @@ public class Juego {
     public String getLetrasUsadas() {
         return rondaActual.getLetrasEquivocadas();
     }
+
+
 }

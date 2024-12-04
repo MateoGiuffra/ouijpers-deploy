@@ -1,5 +1,4 @@
 package com.example.demo.modelo.estadoJuego;
-
 import com.example.demo.modelo.ronda.Ronda;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

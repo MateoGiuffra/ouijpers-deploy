@@ -10,15 +10,20 @@ public class RondaDos extends Ronda{
 
     public RondaDos(){
         super();
-        this.palabrasPosibles = List.of(
-                "ouija", "pesadilla", "aparicion", "chaman", "espiritismo",
-                "leyenda", "sacrificio", "embrujo", "vision", "susurro",
-                "penitente", "entidad", "tarot", "chupacabra", "encantamiento",
-                "sepultura", "brujeria", "santeria", "carcajada", "gnomo",
-                "mascarada", "lamia", "catacumba", "alquimia", "oraculo"
-        );
-        this.setComienzoDeRonda();
     }
+
+    @Override
+    protected void setComienzoDeRonda(){
+        this.palabrasPosibles =  List.of(
+                "aleluyan", "maleficio", "endemoniado", "sanlamuerte", "invocacion",
+                "trasluz", "antropofagia", "sacramento", "entrecruzado", "necrofago",
+                "aberracion", "luzmala", "profecia", "zahir", "oropel",
+                "espectro", "encarnacion", "horripilante", "panteon", "espanto",
+                "transfiguracion", "ahorcado", "devorador", "transmutacion", "pergamino"
+        );
+        this.elegirPalabraRandom();
+    }
+
 
     @Override
     public Ronda proximaRonda() {

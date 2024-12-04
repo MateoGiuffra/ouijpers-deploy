@@ -10,6 +10,10 @@ public class RondaTres extends Ronda{
 
     public RondaTres(){
         super();
+    }
+
+    @Override
+    protected void setComienzoDeRonda(){
         this.palabrasPosibles =  List.of(
                 "aleluyan", "maleficio", "endemoniado", "sanlamuerte", "invocacion",
                 "trasluz", "antropofagia", "sacramento", "entrecruzado", "necrofago",
@@ -17,7 +21,7 @@ public class RondaTres extends Ronda{
                 "espectro", "encarnacion", "horripilante", "panteon", "espanto",
                 "transfiguracion", "ahorcado", "devorador", "transmutacion", "pergamino"
         );
-        this.setComienzoDeRonda();
+        this.elegirPalabraRandom();
     }
 
     @Override

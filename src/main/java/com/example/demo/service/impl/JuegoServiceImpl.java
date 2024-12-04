@@ -5,11 +5,13 @@ import com.example.demo.dao.impl.JugadorDAOImpl;
 import com.example.demo.modelo.Juego;
 import com.example.demo.modelo.Jugador;
 import com.example.demo.modelo.ronda.Ronda;
+import com.example.demo.modelo.ronda.RondaUltimate;
 import com.example.demo.service.JuegoService;
 import com.example.demo.service.JugadorService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.example.demo.exception.notFound.JuegoNoEncontradoException;
+
 @Service
 @Transactional
 public class JuegoServiceImpl implements JuegoService {
@@ -53,6 +55,17 @@ public class JuegoServiceImpl implements JuegoService {
     }
 
     @Override
+    public String letrasEquivocadas(Long id) {
+        return juegoDAO.letrasEquivocadas(id);
+    }
+
+    @Override
+    public String rondaActual(Long id) {
+        Ronda ronda = juegoDAO.rondaActualDe(id);
+        return ronda.getClass().getSimpleName();
+    }
+
+    @Override
     public Jugador empezarJuego(String nombreJugador) {
         //crea el juego y lo persiste
         Juego juego = new Juego();
@@ -67,14 +80,12 @@ public class JuegoServiceImpl implements JuegoService {
     }
 
     @Override
-    public String letrasEquivocadas(Long id) {
-        return juegoDAO.letrasEquivocadas(id);
-    }
-
-    @Override
-    public String rondaActual(Long id) {
-        Ronda ronda = juegoDAO.rondaActualDe(id);
-        return ronda.getClass().getSimpleName();
+    public Juego empezarRondaUltimate(Jugador j1, Jugador j2, Jugador j3, Long idJuego){
+        Juego juego = recuperarJuego(idJuego);
+        Ronda rondaUltimate = new RondaUltimate(j1,j2,j3);
+        juego.setRondaActual(rondaUltimate);
+        actualizarJuego(juego);
+        return juego;
     }
 
 }

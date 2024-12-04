@@ -1,11 +1,8 @@
 package com.example.demo.modelo.ronda;
 
 import com.example.demo.exception.accionInvalida.LetraUsadaException;
-import com.example.demo.modelo.Juego;
-import com.example.demo.modelo.RandomizerEspiritual;
-import com.example.demo.modelo.estadoJuego.Adivinado;
-import com.example.demo.modelo.estadoJuego.Equivocado;
-import com.example.demo.modelo.estadoJuego.EstadoJuego;
+import com.example.demo.modelo.*;
+import com.example.demo.modelo.estadoJuego.*;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -41,10 +38,11 @@ public abstract class Ronda implements Serializable {
 
     public Ronda() {
         this.randomizer = new RandomizerEspiritual();
-        this.letrasEquivocadas = ""; // Inicializamos como cadena vacía
-        this.letrasUsadas = ""; // Inicializamos como cadena vacía
+        this.letrasEquivocadas = "";
+        this.letrasUsadas = "";
         this.intentos = 6;
         this.estado = new Equivocado();
+        this.setComienzoDeRonda();
     }
 
     public String getPalabraRandom() {
@@ -56,7 +54,7 @@ public abstract class Ronda implements Serializable {
         this.convertirPalabraAdivinando();
     }
 
-    public int evaluarLetra(Character letra) {
+    public int evaluarLetra(Character letra, Jugador jugador) {
         this.validarLetra(letra);
         this.estado = new Equivocado();
         List<Character> palabraAAdivinarLista = convertirStringALista(palabraAAdivinar);
@@ -109,11 +107,12 @@ public abstract class Ronda implements Serializable {
         }
     }
 
-    protected void setComienzoDeRonda() {
+    protected abstract void setComienzoDeRonda();
+
+    protected void elegirPalabraRandom(){
         palabraAAdivinar = palabrasPosibles.get(randomizer.getRandomHasta(palabrasPosibles.size()));
         this.convertirPalabraAdivinando();
     }
-
 
     public boolean esPalabraAcertada() {
         return palabraAdivinando.equals(palabraAAdivinar);
@@ -136,5 +135,9 @@ public abstract class Ronda implements Serializable {
         return sb.toString();
     }
 
+    public void cambiarTurnoA(Jugador jugador, Jugador jugadorSiguiente) {
+    }
+
     public abstract Ronda proximaRonda();
+
 }

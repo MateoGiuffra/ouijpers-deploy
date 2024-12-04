@@ -1,6 +1,6 @@
 package com.example.demo.controller.utils;
 
-
+import com.example.demo.controller.dto.NombresDTO;
 
 public class Validator {
 
@@ -21,6 +21,14 @@ public class Validator {
         return instance;
     }
 
+
+
+    private void validarNombre(String nombre){
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacio.");
+        }
+    }
+
     public void validarJugador(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException(NOMBRE_VACIO_O_NULO);
@@ -37,5 +45,11 @@ public class Validator {
         if (idJuego == null) {
             throw new IllegalArgumentException("El id del juego no puede ser nulo.");
         }
+    }
+
+    public void validarNombres(NombresDTO nombres) {
+        this.validarNombre(nombres.nombreJ1());
+        this.validarNombre(nombres.nombreJ2());
+        this.validarNombre(nombres.nombreJ3());
     }
 }

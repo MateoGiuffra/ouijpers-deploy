@@ -91,7 +91,7 @@ public class JugadorDAOImpl implements JugadorDAO {
         return Flux.create(sink -> {
             // Establecemos el listener para los cambios en la colección 'jugadores'
             this.registration = baseDeDatos.collection("jugadores")
-                    .orderBy("puntuacion", Query.Direction.DESCENDING)
+                    .orderBy("puntuacion", Query.Direction.DESCENDING).limit(10)
                     .addSnapshotListener((querySnapshot, e) -> {
                         if (e != null) {
                             // Si ocurre un error, lo manejamos y emitimos el error en el flujo

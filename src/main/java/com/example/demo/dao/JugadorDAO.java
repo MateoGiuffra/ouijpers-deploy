@@ -14,5 +14,4 @@ public interface JugadorDAO {
     Mono<Integer> obtenerPuntaje(String nombre);
     Flux<Jugador> obtenerRanking();
     List<Jugador> obtenerTop();
-    Flux<String> palabraAdivinandoDe(String nombre);
 }

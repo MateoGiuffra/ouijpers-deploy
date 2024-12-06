@@ -125,29 +125,7 @@ public class JugadorDAOImpl implements JugadorDAO {
         return null;
     }
 
-    @Override
-    public Flux<String> palabraAdivinandoDe(String nombre) {
-        return Flux.create(sink -> {
-            ListenerRegistration registration = baseDeDatos.collection("jugadores")
-                    .whereEqualTo("nombre", nombre)
-                    .addSnapshotListener((querySnapshot, e) -> {
-                        if (e != null) {
-                            // Emitir el error al flujo
-                            sink.error(e);
-                            return;
-                        }
-                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                            // Procesar el primer documento del resultado
-                            DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                            Jugador jugador = doc.toObject(Jugador.class);
-                            sink.next(jugador.getPalabraAdivinando()); // Emitir el objeto jugador
-                        }
-                    });
 
-            // Eliminar el listener al cancelar la suscripción
-            sink.onDispose(registration::remove);
-        });
-    }
 
     public void detenerRanking(){
         if (registration != null) {

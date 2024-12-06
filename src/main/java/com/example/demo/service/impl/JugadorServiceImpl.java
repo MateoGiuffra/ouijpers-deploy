@@ -2,10 +2,13 @@ package  com.example.demo.service.impl;
 
 import com.example.demo.dao.JuegoDAO;
 import com.example.demo.dao.impl.JugadorDAOImpl;
+import com.example.demo.dao.impl.PalabraRondaUltimateDAOImpl;
 import com.example.demo.exception.accionInvalida.JugadorDuplicadoException;
 import com.example.demo.exception.notFound.JugadorNoEncontradoException;
+import com.example.demo.exception.notFound.RondaNoEncontradaException;
 import com.example.demo.modelo.Juego;
 import com.example.demo.modelo.Jugador;
+import com.example.demo.modelo.PalabraRondaUltimate;
 import com.example.demo.service.JugadorService;
 import com.google.cloud.firestore.*;
 import jakarta.transaction.Transactional;
@@ -22,10 +25,12 @@ public class JugadorServiceImpl implements JugadorService {
 
     private final JugadorDAOImpl jugadorDAO;
     private final JuegoDAO juegoDAO;
+    private final PalabraRondaUltimateDAOImpl palabraDAO;
 
-    public JugadorServiceImpl(JugadorDAOImpl jugadorDAO, JuegoDAO juegoDAO) {
+    public JugadorServiceImpl(JugadorDAOImpl jugadorDAO, JuegoDAO juegoDAO, PalabraRondaUltimateDAOImpl palabraDAO) {
         this.jugadorDAO = jugadorDAO;
         this.juegoDAO = juegoDAO;
+        this.palabraDAO = palabraDAO;
     }
 
     @Override
@@ -47,16 +52,59 @@ public class JugadorServiceImpl implements JugadorService {
 
     @Override
     public Mono<Jugador> adivinarLetra(Jugador jugador, Character letra, Juego juego) {
+        // se adivina
         jugador.adivinarLetra(letra, juego);
-        if(jugador.getJugadorSiguiente() != null) {
+
+        //se cambia de turno si se puede al siguiente
+        this.cambiarTurnoDelSiguienteSiExiste(jugador, juego);
+
+        // se actualiza el juego
+        juegoDAO.save(juego);
+
+        // se actualiza la palabraDeLaRonda
+        this.actualizarPalabraDeRondaUltimate(jugador, juego);
+
+        //por ultimo se actualiza el jugador
+        return actualizar(jugador);
+    }
+
+    private void actualizarPalabraDeRondaUltimate(Jugador jugador, Juego juego) {
+        try {
+            String id = jugador.getIdPalabraRondaUltimate();
+            if (id == null){
+                crearSiNoExiste(id, jugador, juego);
+                return;
+            }
+            actualizarConLaUltimaPalabraAdivinando(id, jugador, juego);
+        } catch(RondaNoEncontradaException e) {
+            return; //no se hace nada
+        }
+    }
+
+    private void actualizarConLaUltimaPalabraAdivinando(String id, Jugador jugador, Juego juego){
+        PalabraRondaUltimate palabra = palabraDAO.recuperar(id).block();
+        if (palabra != null){
+            palabra.setPalabraAdivinando(juego.getPalabraAdivinando());
+            palabra.setLetrasUsadas(juego.getLetrasUsadas());
+            palabraDAO.actualizarPalabraAdivinando(palabra).subscribe();
+        }
+        jugador.setIdPalabraRondaUltimate(id);
+    }
+
+    private void crearSiNoExiste(String id, Jugador jugador, Juego juego){
+        // crear si no existe
+        PalabraRondaUltimate palabraNueva = new PalabraRondaUltimate(juego.getPalabraAdivinando());
+        palabraDAO.crearPalabraAdivinando(palabraNueva).subscribe();
+        jugador.setIdPalabraRondaUltimate(palabraNueva.getId());
+
+    }
+
+    private void cambiarTurnoDelSiguienteSiExiste(Jugador jugador, Juego juego) {
+        if( jugador.getJugadorSiguiente() != null) {
             Jugador jugadorSiguiente = jugadorDAO.recuperarJugador(jugador.getJugadorSiguiente()).block();
             juego.cambiarTurnoA(jugador, jugadorSiguiente);
             actualizar(jugadorSiguiente).block();
         }
-        // se actualiza el juego y el jugador
-        juegoDAO.save(juego);
-        Mono<Jugador> jugadorActualizado = actualizar(jugador);
-        return jugadorActualizado;
     }
 
     @Override
@@ -88,10 +136,7 @@ public class JugadorServiceImpl implements JugadorService {
         return jugadorDAO.obtenerTop();
     }
 
-    @Override
-    public Flux<String> palabraAdivinandoDe(String nombre) {
-        return jugadorDAO.palabraAdivinandoDe(nombre);
-    }
+
 
 }
 

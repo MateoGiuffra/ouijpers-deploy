@@ -8,7 +8,6 @@ import com.example.demo.service.impl.JugadorServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.demo.modelo.Jugador;
-
 @RestController
 @CrossOrigin
 @RequestMapping("/juego")

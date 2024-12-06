@@ -15,7 +15,7 @@ public class Jugador {
     private int puntuacion;
     private Long idJuego;
     private String jugadorSiguiente;
-    private String palabraAdivinando;
+    private String idPalabraRondaUltimate;
 
     public Jugador(String nombre, Long idJuego) {
         this.nombre = nombre;
@@ -44,6 +44,11 @@ public class Jugador {
 
     public void cambiarTurno() {
         this.esMiTurno = !this.esMiTurno;
+    }
+
+    public void setIds(Long idJuego, String idPalabraRondaUltimate){
+        this.idJuego = idJuego;
+        this.idPalabraRondaUltimate = idPalabraRondaUltimate;
     }
 
 }

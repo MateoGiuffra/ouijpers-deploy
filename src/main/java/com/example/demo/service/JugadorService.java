@@ -17,5 +17,4 @@ public interface JugadorService {
     Mono<Integer> obtenerPuntaje(String nombre);
     void detenerRanking();
     List<Jugador> obtenerTop();
-    Flux<String> palabraAdivinandoDe(String nombre);
 }

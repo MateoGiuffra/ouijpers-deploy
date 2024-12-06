@@ -1,9 +1,11 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.dao.JuegoDAO;
+import com.example.demo.dao.PalabraRondaUltimateDAO;
 import com.example.demo.dao.impl.JugadorDAOImpl;
 import com.example.demo.modelo.Juego;
 import com.example.demo.modelo.Jugador;
+import com.example.demo.modelo.PalabraRondaUltimate;
 import com.example.demo.modelo.ronda.Ronda;
 import com.example.demo.modelo.ronda.RondaUltimate;
 import com.example.demo.service.JuegoService;
@@ -18,10 +20,12 @@ public class JuegoServiceImpl implements JuegoService {
 
     private final JuegoDAO juegoDAO;
     private final JugadorService jugadorService;
+    private final PalabraRondaUltimateDAO palabraDAO;
 
-    public JuegoServiceImpl(JuegoDAO juegoDAO, JugadorDAOImpl jugadorDAO, JugadorService jugadorService) {
+    public JuegoServiceImpl(JuegoDAO juegoDAO, JugadorDAOImpl jugadorDAO, JugadorService jugadorService, PalabraRondaUltimateDAO palabraDAO) {
         this.juegoDAO = juegoDAO;
         this.jugadorService = jugadorService;
+        this.palabraDAO = palabraDAO;
     }
 
     @Override
@@ -73,7 +77,6 @@ public class JuegoServiceImpl implements JuegoService {
 
         //crea el jugador y lo persiste con el id del juego recien creado
         Jugador jugador = new Jugador(nombreJugador);
-        jugador.setPalabraAdivinando(juego.getPalabraAdivinando());
         jugadorService.crearJugador(jugador, juego.getId()).subscribe();
 
         //retorna el jugador
@@ -86,6 +89,14 @@ public class JuegoServiceImpl implements JuegoService {
         Ronda rondaUltimate = new RondaUltimate(j1,j2,j3);
         juego.setRondaActual(rondaUltimate);
         actualizarJuego(juego);
+
+        PalabraRondaUltimate palabra = new PalabraRondaUltimate(juego.getPalabraAdivinando(), juego.getLetrasUsadas());
+        palabraDAO.crearPalabraAdivinando(palabra);
+
+        j1.setIds(idJuego, palabra.getId());
+        j2.setIds(idJuego, palabra.getId());
+        j3.setIds(idJuego, palabra.getId());
+
         // Actualiza a los jugadores en la base de datos
         jugadorService.actualizar(j1).subscribe();
         jugadorService.actualizar(j2).subscribe();

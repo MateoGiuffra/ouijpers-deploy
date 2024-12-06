@@ -27,10 +27,7 @@ public class JugadorREST {
         this.juegoService = juegoService;
     }
 
-    @GetMapping(value = "/{nombre}/palabraAdivinando", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<Flux<String>> escucharJugadorP(@PathVariable String nombre) {
-        return ResponseEntity.ok(jugadorService.palabraAdivinandoDe(nombre));
-    }
+
 
     @PostMapping()
     public ResponseEntity<JugadorDTO> crearJugador(@RequestBody String nombre){
@@ -65,19 +62,26 @@ public class JugadorREST {
 
     @PutMapping("/{nombre}/adivinarLetra/{letra}")
     public ResponseEntity<Mono<JugadorDTO>> adivinarLetra(@PathVariable String nombre, @PathVariable Character letra) {
-        Validator.getInstance().validarLetra(letra);
-        Validator.getInstance().validarJugador(nombre);
+        try{
 
-        Jugador jugador = jugadorService.buscarJugador(nombre).block();
-        Long idJuego = jugador.getIdJuego();
+            Validator.getInstance().validarLetra(letra);
+            Validator.getInstance().validarJugador(nombre);
 
-        Validator.getInstance().validarIdDeJuego(idJuego);
+            Jugador jugador = jugadorService.buscarJugador(nombre).block();
+            Long idJuego = jugador.getIdJuego();
 
-        Juego juegoRecuperado = juegoService.recuperarJuego(idJuego);
+            Validator.getInstance().validarIdDeJuego(idJuego);
 
-        jugadorService.adivinarLetra(jugador, letra,juegoRecuperado).subscribe();
+            Juego juegoRecuperado = juegoService.recuperarJuego(idJuego);
 
-        return ResponseEntity.ok(jugadorService.buscarJugador(nombre).map(JugadorDTO::desdeModelo));
+            jugadorService.adivinarLetra(jugador, letra, juegoRecuperado).subscribe();
+
+            return ResponseEntity.ok(jugadorService.buscarJugador(nombre).map(JugadorDTO::desdeModelo));
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Mono.error(e));
+        }
+
     }
 
     //este tenemos que eliminar

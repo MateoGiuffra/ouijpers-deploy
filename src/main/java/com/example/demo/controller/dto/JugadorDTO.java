@@ -2,7 +2,7 @@ package com.example.demo.controller.dto;
 
 import com.example.demo.modelo.Jugador;
 
-public record JugadorDTO (String nombre, boolean esMiTurno, int puntaje, Long idJuego, String jugadorSiguiente, String palabraAdivinando){
+public record JugadorDTO (String nombre, boolean esMiTurno, int puntaje, Long idJuego, String jugadorSiguiente, String idPalabraAdivinando){
 
     public static JugadorDTO desdeModelo(Jugador jugador) {
         return new JugadorDTO(
@@ -11,7 +11,7 @@ public record JugadorDTO (String nombre, boolean esMiTurno, int puntaje, Long id
                 jugador.getPuntuacion(),
                 jugador.getIdJuego(),
                 jugador.getJugadorSiguiente(),
-                jugador.getPalabraAdivinando()
+                jugador.getIdPalabraRondaUltimate()
         );
     }
 
@@ -21,7 +21,7 @@ public record JugadorDTO (String nombre, boolean esMiTurno, int puntaje, Long id
         jugador.setPuntuacion(this.puntaje);
         jugador.setIdJuego(this.idJuego);
         jugador.setJugadorSiguiente(this.jugadorSiguiente);
-        jugador.setPalabraAdivinando(this.palabraAdivinando);
+        jugador.setIdPalabraRondaUltimate(this.idPalabraAdivinando);
         return jugador;
     }
 }

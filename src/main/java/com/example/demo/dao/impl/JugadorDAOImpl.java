@@ -10,7 +10,9 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+
 @Repository
 public class JugadorDAOImpl implements JugadorDAO {
 
@@ -107,6 +109,43 @@ public class JugadorDAOImpl implements JugadorDAO {
 
             // Limpiamos el listener cuando el flujo termine (cuando el cliente deje de escuchar)
             sink.onCancel(() -> {if (registration != null) registration.remove();});
+        });
+    }
+
+
+    @Override
+    public List<Jugador> obtenerTop() {
+        try{
+            QuerySnapshot query = baseDeDatos.collection("jugadores").orderBy("puntuacion", Query.Direction.DESCENDING).limit(3).get().get();
+            return query.toObjects(Jugador.class);
+
+        }catch(InterruptedException | ExecutionException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Flux<String> palabraAdivinandoDe(String nombre) {
+        return Flux.create(sink -> {
+            ListenerRegistration registration = baseDeDatos.collection("jugadores")
+                    .whereEqualTo("nombre", nombre)
+                    .addSnapshotListener((querySnapshot, e) -> {
+                        if (e != null) {
+                            // Emitir el error al flujo
+                            sink.error(e);
+                            return;
+                        }
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            // Procesar el primer documento del resultado
+                            DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                            Jugador jugador = doc.toObject(Jugador.class);
+                            sink.next(jugador.getPalabraAdivinando()); // Emitir el objeto jugador
+                        }
+                    });
+
+            // Eliminar el listener al cancelar la suscripción
+            sink.onDispose(registration::remove);
         });
     }
 

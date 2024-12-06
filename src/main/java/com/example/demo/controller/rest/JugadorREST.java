@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/jugador")
@@ -25,11 +27,16 @@ public class JugadorREST {
         this.juegoService = juegoService;
     }
 
+    @GetMapping(value = "/{nombre}/palabraAdivinando", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public ResponseEntity<Flux<String>> escucharJugadorP(@PathVariable String nombre) {
+        return ResponseEntity.ok(jugadorService.palabraAdivinandoDe(nombre));
+    }
+
     @PostMapping()
     public ResponseEntity<JugadorDTO> crearJugador(@RequestBody String nombre){
         Validator.getInstance().validarJugador(nombre);
         Jugador jugador = new Jugador(nombre);
-        jugadorService.crearJugador(jugador, 123L);
+        jugadorService.crearJugador(jugador, 123L).subscribe();
         return ResponseEntity.ok(JugadorDTO.desdeModelo(jugador));
     }
 
@@ -92,6 +99,10 @@ public class JugadorREST {
         return ResponseEntity.ok(puntaje);
     }
 
-
+    @GetMapping("/top")
+    public ResponseEntity<List<JugadorDTO>> obtenerTop(){
+        List<Jugador> top = jugadorService.obtenerTop();
+        return ResponseEntity.ok(top.stream().map(JugadorDTO::desdeModelo).toList());
+    }
 
 }

@@ -24,11 +24,7 @@ public class RondaUltimate extends Ronda {
     @Override
     protected void setComienzoDeRonda(){
         this.palabrasPosibles =  List.of(
-                "aleluyan", "maleficio", "endemoniado", "sanlamuerte", "invocacion",
-                "trasluz", "antropofagia", "sacramento", "entrecruzado", "necrofago",
-                "aberracion", "luzmala", "profecia", "zahir", "oropel",
-                "espectro", "encarnacion", "horripilante", "panteon", "espanto",
-                "transfiguracion", "ahorcado", "devorador", "transmutacion", "pergamino"
+                "necromanticos", "transmutaciones", "deshumanizacion", "desmembramiento"
         );
         this.elegirPalabraRandom();
     }

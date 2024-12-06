@@ -73,6 +73,7 @@ public class JuegoServiceImpl implements JuegoService {
 
         //crea el jugador y lo persiste con el id del juego recien creado
         Jugador jugador = new Jugador(nombreJugador);
+        jugador.setPalabraAdivinando(juego.getPalabraAdivinando());
         jugadorService.crearJugador(jugador, juego.getId()).subscribe();
 
         //retorna el jugador
@@ -85,7 +86,18 @@ public class JuegoServiceImpl implements JuegoService {
         Ronda rondaUltimate = new RondaUltimate(j1,j2,j3);
         juego.setRondaActual(rondaUltimate);
         actualizarJuego(juego);
+        // Actualiza a los jugadores en la base de datos
+        jugadorService.actualizar(j1).subscribe();
+        jugadorService.actualizar(j2).subscribe();
+        jugadorService.actualizar(j3).subscribe();
         return juego;
+    }
+
+    @Override
+    public void pasarALaSiguienteRonda(Long idJuego){
+        Juego juego = recuperarJuego(idJuego);
+        juego.cambiarProximaRonda();
+        juegoDAO.save(juego);
     }
 
 }

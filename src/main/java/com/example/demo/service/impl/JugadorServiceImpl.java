@@ -13,18 +13,17 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
 public class JugadorServiceImpl implements JugadorService {
 
-    private final Firestore db;
     private final JugadorDAOImpl jugadorDAO;
     private final JuegoDAO juegoDAO;
 
-    public JugadorServiceImpl(Firestore db, JugadorDAOImpl jugadorDAO, JuegoDAO juegoDAO) {
-        this.db = db;
+    public JugadorServiceImpl(JugadorDAOImpl jugadorDAO, JuegoDAO juegoDAO) {
         this.jugadorDAO = jugadorDAO;
         this.juegoDAO = juegoDAO;
     }
@@ -49,12 +48,15 @@ public class JugadorServiceImpl implements JugadorService {
     @Override
     public Mono<Jugador> adivinarLetra(Jugador jugador, Character letra, Juego juego) {
         jugador.adivinarLetra(letra, juego);
-        Jugador jugadorSiguiente = jugadorDAO.recuperarJugador(jugador.getJugadorSiguiente()).block();
-        juego.cambiarTurnoA(jugador, jugadorSiguiente);
+        if(jugador.getJugadorSiguiente() != null) {
+            Jugador jugadorSiguiente = jugadorDAO.recuperarJugador(jugador.getJugadorSiguiente()).block();
+            juego.cambiarTurnoA(jugador, jugadorSiguiente);
+            actualizar(jugadorSiguiente).block();
+        }
         // se actualiza el juego y el jugador
         juegoDAO.save(juego);
-        actualizar(jugadorSiguiente);
-        return actualizar(jugador);
+        Mono<Jugador> jugadorActualizado = actualizar(jugador);
+        return jugadorActualizado;
     }
 
     @Override
@@ -79,6 +81,16 @@ public class JugadorServiceImpl implements JugadorService {
     @Override
     public void detenerRanking() {
         jugadorDAO.detenerRanking();
+    }
+
+    @Override
+    public List<Jugador> obtenerTop() {
+        return jugadorDAO.obtenerTop();
+    }
+
+    @Override
+    public Flux<String> palabraAdivinandoDe(String nombre) {
+        return jugadorDAO.palabraAdivinandoDe(nombre);
     }
 
 }

@@ -29,6 +29,12 @@ public class JuegoREST {
         return ResponseEntity.ok(JugadorDTO.desdeModelo(jugador));
     }
 
+    @PutMapping("/{id}/avanzarRonda")
+    public ResponseEntity<String> pasarALaSiguienteRonda(@PathVariable Long id) {
+        juegoService.pasarALaSiguienteRonda(id);
+        return ResponseEntity.ok("Se ha pasado correctamente a la siguiente ronda");
+    }
+
     @GetMapping("/{id}/palabraAdivinando")
     public ResponseEntity<String> obtenerPalabraAdivinando(@PathVariable Long id) {
         String palabra = juegoService.palabraAdivinando(id);

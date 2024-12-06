@@ -18,11 +18,9 @@ public class RondaUno extends Ronda{
     public RondaUno(RandomizerEspiritual random){
         super();
         this.palabrasPosibles = List.of(
-                "alma", "espiritu", "sombra", "fantasma", "bruja",
-                "hechizo", "duende", "cripta", "ritual", "miedo",
-                "eco", "angel", "llanto", "banshee", "fuego",
-                "vudu", "karma", "hueso", "vela", "cuervo",
-                "grito", "truco", "magia", "cirio", "luz"
+                "tumba", "secta", "miedo", "bruja", "hueso", "grito", "ratas", "dagas", "pacto",
+                "fosas", "furia", "peste", "alma", "fosil", "vudu", "sombra", "cruel", "sufrir", "angel",
+                "corran", "horror", "maldad", "ayuda", "rencor", "pecar"
         );
         this.setRandomizer(random);
         this.setComienzoDeRonda();
@@ -31,11 +29,9 @@ public class RondaUno extends Ronda{
     @Override
     protected void setComienzoDeRonda() {
         this.palabrasPosibles = List.of(
-                "alma", "espiritu", "sombra", "fantasma", "bruja",
-                "hechizo", "duende", "cripta", "ritual", "miedo",
-                "eco", "angel", "llanto", "banshee", "fuego",
-                "vudu", "karma", "hueso", "vela", "cuervo",
-                "grito", "truco", "magia", "cirio", "luz"
+                "tumba", "secta", "miedo", "bruja", "hueso", "grito", "ratas", "dagas", "pacto",
+                "fosas", "furia", "peste", "alma", "fosil", "vudu", "sombra", "cruel", "sufrir", "angel",
+                "corran", "horror", "maldad", "ayuda", "rencor", "pecar"
         );
         this.elegirPalabraRandom();
     }

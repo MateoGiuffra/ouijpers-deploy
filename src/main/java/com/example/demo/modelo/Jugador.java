@@ -15,6 +15,7 @@ public class Jugador {
     private int puntuacion;
     private Long idJuego;
     private String jugadorSiguiente;
+    private String palabraAdivinando;
 
     public Jugador(String nombre, Long idJuego) {
         this.nombre = nombre;
@@ -24,7 +25,9 @@ public class Jugador {
     }
 
     public void setJugadorSiguiente(String jugadorNombre){
-        if (this.nombre == jugadorNombre) throw new RecursionException(this.nombre, jugadorNombre);
+        if (this.nombre != null && this.nombre.equals(jugadorNombre)) {
+            throw new RecursionException(this.nombre, jugadorNombre);
+        }
         this.jugadorSiguiente = jugadorNombre;
     }
 
@@ -36,7 +39,7 @@ public class Jugador {
 
     public void adivinarLetra(Character letra, Juego juego){
         if (!this.esMiTurno) throw new NoEsTuTurnoException();
-        juego.evaluarLetra(letra, this);
+        puntuacion += juego.evaluarLetra(letra, this);
     }
 
     public void cambiarTurno() {

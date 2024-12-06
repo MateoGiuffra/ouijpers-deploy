@@ -5,6 +5,7 @@ import com.example.demo.modelo.Jugador;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 
 public interface JugadorService {
     Mono<Void> crearJugador(Jugador jugador, Long id);
@@ -15,4 +16,6 @@ public interface JugadorService {
     Mono<Jugador> adivinarLetra(Jugador jugador, Character letra, Juego juego);
     Mono<Integer> obtenerPuntaje(String nombre);
     void detenerRanking();
+    List<Jugador> obtenerTop();
+    Flux<String> palabraAdivinandoDe(String nombre);
 }

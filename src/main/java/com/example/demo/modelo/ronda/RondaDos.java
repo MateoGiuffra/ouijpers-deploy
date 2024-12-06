@@ -15,11 +15,10 @@ public class RondaDos extends Ronda{
     @Override
     protected void setComienzoDeRonda(){
         this.palabrasPosibles =  List.of(
-                "aleluyan", "maleficio", "endemoniado", "sanlamuerte", "invocacion",
-                "trasluz", "antropofagia", "sacramento", "entrecruzado", "necrofago",
-                "aberracion", "luzmala", "profecia", "zahir", "oropel",
-                "espectro", "encarnacion", "horripilante", "panteon", "espanto",
-                "transfiguracion", "ahorcado", "devorador", "transmutacion", "pergamino"
+                "espiritu", "lamento", "macabro", "sepulcro", "angustia", "maldicion",
+                "craneos", "exorcismo", "penumbra", "funebre", "necrosis", "reliquia", "fantasma",
+                "tortura", "maldito", "ofrenda", "diablo", "sangren", "silencio", "mentiras",
+                "traicion", "corrupto", "perdedor", "macumba", "satanico"
         );
         this.elegirPalabraRandom();
     }

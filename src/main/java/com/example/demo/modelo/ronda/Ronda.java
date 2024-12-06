@@ -1,6 +1,7 @@
 package com.example.demo.modelo.ronda;
 
 import com.example.demo.exception.accionInvalida.LetraUsadaException;
+import com.example.demo.exception.accionInvalida.SinIntentosException;
 import com.example.demo.modelo.*;
 import com.example.demo.modelo.estadoJuego.*;
 import jakarta.persistence.*;
@@ -55,6 +56,7 @@ public abstract class Ronda implements Serializable {
     }
 
     public int evaluarLetra(Character letra, Jugador jugador) {
+        if (intentos <= 0) throw new SinIntentosException();
         this.validarLetra(letra);
         this.estado = new Equivocado();
         List<Character> palabraAAdivinarLista = convertirStringALista(palabraAAdivinar);
@@ -66,9 +68,9 @@ public abstract class Ronda implements Serializable {
                 estado = new Adivinado();
             }
         }
-
         palabraAdivinando = convertirListaAString(palabraAdivinandoLista);
         letrasUsadas += letra; // Agregamos la letra directamente al String
+        jugador.setPalabraAdivinando(palabraAdivinando);
         return estado.cantPuntosObtenidos(this, letra);
     }
 
@@ -94,7 +96,7 @@ public abstract class Ronda implements Serializable {
         List<Character> inicial = new ArrayList<>();
         List<Character> palabraAAdivinarLista = convertirStringALista(palabraAAdivinar);
         for (int i = 0; i < palabraAAdivinar.length(); i++) {
-               this.convertirPalabra(inicial, palabraAAdivinarLista.get(i));
+            this.convertirPalabra(inicial, palabraAAdivinarLista.get(i));
         }
         palabraAdivinando = convertirListaAString(inicial);
     }

@@ -65,7 +65,7 @@ public abstract class Ronda implements Serializable {
         for (int i = 0; i < palabraAAdivinarLista.size(); i++) {
             if (palabraAAdivinarLista.get(i).equals(letra)) {
                 palabraAdivinandoLista.set(i, letra);
-                estado = new Adivinado();
+                 estado = new Adivinado();
             }
         }
         palabraAdivinando = convertirListaAString(palabraAdivinandoLista);

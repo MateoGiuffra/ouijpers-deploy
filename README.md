@@ -1,5 +1,3 @@
-### **README.md**
-
 # Ouijpers: Un juego entre la vida y la muerte
 
 Este repositorio contiene el código fuente de **Ouijpers**, una implementación basada en un juego inspirado en "el ahorcado". Aquí, el objetivo es sobrevivir a un desafío demoníaco, recuperar las partes perdidas del brazo de RDJ y salvar nuestras almas en el proceso. Este proyecto combina el uso de tecnologías modernas como **Firebase Firestore** para datos en tiempo real y **MySQL** para la persistencia del juego.
@@ -93,18 +91,20 @@ Este proyecto está desplegado en Railway y puede ser accedido públicamente. Pa
    ```bash
    git clone https://github.com/tu-repo/ouijpers.git
    ```
-2. Configura el archivo `application.properties` con tus credenciales de Firebase y MySQL.
+2. Crea el archivo `.env` en la carpeta raiz y configuralo con las siguientes variables:
+   ```env
+   PORT=8080
+   DB_USER=tu_usuario
+   DB_PASSWORD=tu_contraseña
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_NAME=tu_base_de_datos
+   DB_KEY=json_de_firebase
+   ```
 3. Ejecuta la aplicación:
    ```bash
    ./gradlew bootRun
    ```
 
-### **Variables de entorno**
-- `DB_HOST`: Host de la base de datos MySQL.
-- `DB_PORT`: Puerto de la base de datos.
-- `DB_NAME`: Nombre de la base de datos.
-- `DB_USER`: Usuario de la base de datos.
-- `DB_PASSWORD`: Contraseña de la base de datos.
-- `GOOGLE_APPLICATION_CREDENTIALS`: Path al archivo de credenciales de Firebase.
-
 ---
+

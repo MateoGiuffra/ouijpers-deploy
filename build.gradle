@@ -39,6 +39,10 @@ dependencies {
     implementation 'io.grpc:grpc-netty-shaded'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
+    //dependencia del .env
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+
+
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
